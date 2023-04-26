@@ -4,7 +4,7 @@
 CSC = dotnet
 
 # Set the output directory for the compiled files
-OUTPUT_DIR = ./bin2
+OUTPUT_DIR = ./bin
 
 
 all: Program

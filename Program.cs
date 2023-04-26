@@ -1,7 +1,7 @@
 ﻿
 public class Program{
     static void Main (string[] args){
-        String filePath = "../tests/data/training.mrg";
+        String filePath = "./tests/data/training.mrg";
 
         SExpressionParser parser = new SExpressionParser();
         Grammar grammar = parser.parseFile(filePath);

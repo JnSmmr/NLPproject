@@ -1,8 +1,3 @@
-E:\NLPproject\bin\Debug\net7.0\NLPproject.exe
-E:\NLPproject\bin\Debug\net7.0\NLPproject.deps.json
-E:\NLPproject\bin\Debug\net7.0\NLPproject.runtimeconfig.json
-E:\NLPproject\bin\Debug\net7.0\NLPproject.dll
-E:\NLPproject\bin\Debug\net7.0\NLPproject.pdb
 E:\NLPproject\obj\Debug\net7.0\NLPproject.csproj.AssemblyReference.cache
 E:\NLPproject\obj\Debug\net7.0\NLPproject.GeneratedMSBuildEditorConfig.editorconfig
 E:\NLPproject\obj\Debug\net7.0\NLPproject.AssemblyInfoInputs.cache
@@ -18,3 +13,8 @@ E:\NLPproject\obj\Debug\net7.0\ref\pcfg_tool.dll
 E:\NLPproject\bin2\pcfg_tool.exe
 E:\NLPproject\bin2\pcfg_tool.deps.json
 E:\NLPproject\bin2\pcfg_tool.runtimeconfig.json
+E:\NLPproject\bin\pcfg_tool.exe
+E:\NLPproject\bin\pcfg_tool.deps.json
+E:\NLPproject\bin\pcfg_tool.runtimeconfig.json
+E:\NLPproject\bin\pcfg_tool.dll
+E:\NLPproject\bin\pcfg_tool.pdb

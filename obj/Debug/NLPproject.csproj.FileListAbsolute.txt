@@ -1,0 +1,15 @@
+E:\NLPproject\obj\Debug\NLPproject.csproj.AssemblyReference.cache
+E:\NLPproject\obj\Debug\NLPproject.GeneratedMSBuildEditorConfig.editorconfig
+E:\NLPproject\obj\Debug\NLPproject.AssemblyInfoInputs.cache
+E:\NLPproject\obj\Debug\NLPproject.AssemblyInfo.cs
+E:\NLPproject\obj\Debug\NLPproject.csproj.CoreCompileInputs.cache
+E:\NLPproject\pcfg_tool.exe
+E:\NLPproject\obj\Debug\pcfg_tool.dll
+E:\NLPproject\obj\Debug\refint\pcfg_tool.dll
+E:\NLPproject\obj\Debug\pcfg_tool.pdb
+E:\NLPproject\pcfg_tool.deps.json
+E:\NLPproject\obj\Debug\NLPproject.genruntimeconfig.cache
+E:\NLPproject\pcfg_tool.runtimeconfig.json
+E:\NLPproject\pcfg_tool.dll
+E:\NLPproject\obj\Debug\ref\pcfg_tool.dll
+E:\NLPproject\pcfg_tool.pdb

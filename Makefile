@@ -9,8 +9,8 @@ OUTPUT_DIR = ./bin
 
 all: Program
 
-Program: NLPproject.csproj
-	$(CSC) build $(BUILD_FLAGS) -o $(OUTPUT_DIR) NLPproject.csproj
+Program: Program.cs
+	$(CSC) build $(BUILD_FLAGS) NLPproject.csproj
 
 
 clean:

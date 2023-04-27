@@ -18,3 +18,8 @@ E:\NLPproject\bin\pcfg_tool.deps.json
 E:\NLPproject\bin\pcfg_tool.runtimeconfig.json
 E:\NLPproject\bin\pcfg_tool.dll
 E:\NLPproject\bin\pcfg_tool.pdb
+E:\net7.0\pcfg_tool.exe
+E:\net7.0\pcfg_tool.deps.json
+E:\net7.0\pcfg_tool.runtimeconfig.json
+E:\net7.0\pcfg_tool.dll
+E:\net7.0\pcfg_tool.pdb

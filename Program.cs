@@ -1,13 +1,29 @@
 ﻿
 public class Program{
-    static void Main (string[] args){
-        String filePath = "./tests/data/training.mrg";
+    static int Main (string[] args){
 
-        SExpressionParser parser = new SExpressionParser();
-        Grammar grammar = parser.parseFile(filePath);
+        Console.WriteLine(args.Length);
+        if (args.Length == 0){
+            Console.WriteLine("Please use arguments to specify the required task.");
+            return 1;
+        }
+        if (args[0] == "induce"){
+            String? grammarName = null;
+            if (args.Length > 1){
+                grammarName = args[1];
+            }
+            SExpressionParser parser = new SExpressionParser();
+            Grammar grammar = parser.parseFile(grammarName);
+            grammar.write();
+            return 0;
+        }
 
-        Console.WriteLine("something: " + grammar.rules.Count());
+
+    Console.WriteLine("This feature has propably not been implemented yet.");
+    return 22;
     }
+
+    
 }
     //TODO: put struct classes in different file, are structs better maybe?
 
@@ -15,17 +31,29 @@ public class SExpressionParser{
     private String[] tokens = new String[]{};
     int counter;
 
-    GrammarBuilder grammarBuilder = new GrammarBuilder();
 
-    public Grammar parseFile(String file){
 
-        IEnumerable<string> lines = File.ReadLines(file);
+    public Grammar parseFile(String grammarName){
+
+        GrammarBuilder grammarBuilder = new GrammarBuilder(grammarName);
+
+        Console.WriteLine("Please input the constituent trees as s-expressions");
+        List<string> lines = new List<string>();
+        while(true){
+            string line = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(line)){
+                break;
+            }
+            lines.Add(line);
+        }
+        
         foreach ( string line in lines){
             tokens = tokenizeExpression(line).ToArray();
             counter=2;
             Tree parsedTree = parseSExpression();
             grammarBuilder.induceGrammar(parsedTree);
         }
+        grammarBuilder.grammar.normalizeRules();
         return grammarBuilder.grammar;
     } 
 
@@ -78,34 +106,46 @@ public class SExpressionParser{
 }
 
 public class GrammarBuilder{
-    public Grammar grammar = new Grammar();
+    public Grammar grammar;
+    public GrammarBuilder(String grammarName){
+
+        grammar = new Grammar(grammarName);
+    }
+
 
     public void induceGrammar(Tree tree){
         
-        List<Rule> rules = formulateRules(tree);
-        foreach( Rule rule in rules){
-            grammar.addRule(rule);           
+        (List<Rule> lexRules, List<Rule> nonLexRules) = formulateRules(tree);
+        foreach( Rule rule in lexRules){
+            grammar.addLexRule(rule);           
+        }
+        foreach(Rule rule in nonLexRules){
+            grammar.addNonLexRule(rule);
         }
     }
 
-    static public List<Rule> formulateRules(Tree tree){
-        List<Rule> rules = new List<Rule>();
+    static public (List<Rule>, List<Rule>) formulateRules(Tree tree){
+        List<Rule> lexRules = new List<Rule>();
+        List<Rule> nonLexRules = new List<Rule>();
 
-        if (tree.children.Count == 1){
+        if (tree.children.Count == 1 && !tree.children[0].children.Any()){
             String[] sList = new String[]{tree.children[0].value};
-            Rule lexRule = new Rule(tree.value,sList);
-            rules.Add(lexRule);
-            return rules;
+            Rule lexRule = new Rule(tree.value,sList,true);
+            lexRules.Add(lexRule);
+            return (lexRules,nonLexRules);
         }
         else{
             List<String> children = new List<string>();
             for (int i = 0; i<tree.children.Count(); i++){
                 children.Add(tree.children[i].value);
-                rules.AddRange(formulateRules(tree.children[i]));
+                (List<Rule>, List<Rule>) recursiveRules = formulateRules(tree.children[i]);
+                lexRules.AddRange(recursiveRules.Item1);
+                nonLexRules.AddRange(recursiveRules.Item2);
+
             } 
-            Rule nonLexRule = new Rule(tree.value, children.ToArray());
-            rules.Add(nonLexRule);
-            return rules;            
+            Rule nonLexRule = new Rule(tree.value, children.ToArray(),false);
+            nonLexRules.Add(nonLexRule);
+            return (lexRules,nonLexRules);            
             }
         }
     }
@@ -120,13 +160,13 @@ public struct Tree{
     }
 }
 
+
 public struct Rule{
 
-    bool isLexical = false;
     public String leftSide;
     public String[] rightSide;
 
-    public Rule(String ls, String[] rs){
+    public Rule(String ls, String[] rs, Boolean lexical){
         leftSide = ls;       
         rightSide = rs;
     }
@@ -134,7 +174,6 @@ public struct Rule{
     public override bool Equals(object? obj)
     {
         return obj is Rule rule &&
-               isLexical == rule.isLexical &&
                leftSide == rule.leftSide &&
                checkRightEq(rightSide, rule.rightSide);
     }
@@ -152,22 +191,44 @@ public struct Rule{
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(isLexical, leftSide);
+        return HashCode.Combine(leftSide);
     }
 }
 
 
 public class Grammar{
-    public Dictionary<Rule, float> rules = new Dictionary<Rule, float>();
+    public Dictionary<Rule, float> nonLexRules = new Dictionary<Rule, float>();
+    public Dictionary<Rule, float> lexRules = new Dictionary<Rule, float>();
     public Dictionary<string, int> leftSideCount = new Dictionary<string, int>();
+    public String? name;
 
-    public void addRule(Rule rule){
+    public Grammar(String grammarName){
+        name = grammarName;
+    }    
+
+    public void addLexRule(Rule rule){
         
-        if (rules.ContainsKey(rule)){
-            rules[rule] ++;
+        if (lexRules.ContainsKey(rule)){
+            lexRules[rule] ++;
         }
         else{
-            rules.Add(rule,1);
+            lexRules.Add(rule,1);
+        }          
+        
+        if ( leftSideCount.ContainsKey(rule.leftSide)){
+            leftSideCount[rule.leftSide]++;
+        }
+        else{
+            leftSideCount[rule.leftSide] = 1;
+        }
+    }
+        public void addNonLexRule(Rule rule){
+        
+        if (nonLexRules.ContainsKey(rule)){
+            nonLexRules[rule] ++;
+        }
+        else{
+            nonLexRules.Add(rule,1);
         }          
         
         if ( leftSideCount.ContainsKey(rule.leftSide)){
@@ -178,11 +239,99 @@ public class Grammar{
         }
     }
 
-    public void NormalizeRules(){
-        foreach (Rule rule in rules.Keys.ToList()){
+    public void normalizeRules(){
+        foreach (Rule rule in lexRules.Keys.ToList()){
             int occurenceCount = leftSideCount[rule.leftSide];
-            float normalizedRuleWeight = rules[rule] / occurenceCount;
-            rules[rule] = normalizedRuleWeight;
+            float normalizedRuleWeight = lexRules[rule] / occurenceCount;
+            lexRules[rule] = normalizedRuleWeight;
+        }
+        foreach (Rule rule in nonLexRules.Keys.ToList()){
+            int occurenceCount = leftSideCount[rule.leftSide];
+            float normalizedRuleWeight = nonLexRules[rule] / occurenceCount;
+            nonLexRules[rule] = normalizedRuleWeight;
+        }
+
+
+    }
+
+    public void write(){
+        if(name == null){
+            writeToCMD();
+        }
+        else{
+            writeToFile();
+        }
+    }
+    public void writeToCMD(){
+
+        SortedSet<string> setOfWords = new SortedSet<string>();
+        
+        Console.WriteLine("Nonlexical Rules:  _______________________________________________");
+        foreach (KeyValuePair<Rule,float> weightedRule in nonLexRules){   
+            String outString = (weightedRule.Key.leftSide) + " ->";
+            foreach (String n in weightedRule.Key.rightSide){
+                outString = outString + " " + n;
+            }
+            Console.WriteLine(outString + " " + weightedRule.Value);
+            }
+        Console.WriteLine("Lexical Rules: _______________________________________________");
+        foreach (KeyValuePair<Rule,float> weightedRule in lexRules){
+
+            Console.WriteLine(weightedRule.Key.leftSide + " " + weightedRule.Key.rightSide[0] + " " + weightedRule.Value);                
+            if(!setOfWords.Contains(weightedRule.Key.rightSide[0])){
+                Console.WriteLine(weightedRule.Key.leftSide + " " + weightedRule.Key.rightSide[0] + " " + weightedRule.Value); 
+                setOfWords.Add(weightedRule.Key.rightSide[0]);
+            }
+        }
+        
+        Console.WriteLine("Words present: _______________________________________________");
+        foreach(String word in setOfWords){
+            Console.WriteLine(word);
+        }       
+    }
+        public void writeToFile(){
+
+        string rulesFile = name + ".rules";
+        string lexiconFile = name + ".lexicon";
+        string wordsFile = name + ".words";
+
+        if(File.Exists(rulesFile)){
+            File.Delete(rulesFile);
+        }
+        if(File.Exists(lexiconFile)){
+            File.Delete(lexiconFile);
+        }
+        if(File.Exists(wordsFile)){
+            File.Delete(wordsFile);
+        }
+
+        SortedSet<string> setOfWords = new SortedSet<string>();
+
+        using(StreamWriter lexiconWriter = new StreamWriter(lexiconFile))
+        using(StreamWriter ruleWriter = new StreamWriter(rulesFile)){
+
+            foreach (KeyValuePair<Rule,float> weightedRule in lexRules){
+
+                lexiconWriter.WriteLine(weightedRule.Key.leftSide + " " + weightedRule.Key.rightSide[0] + " " + weightedRule.Value);                
+                if(!setOfWords.Contains(weightedRule.Key.rightSide[0])){
+                    setOfWords.Add(weightedRule.Key.rightSide[0]);
+                }
+            }
+                
+            foreach (KeyValuePair<Rule,float> weightedRule in nonLexRules){
+                String outString = (weightedRule.Key.leftSide) + " ->";
+                foreach (String n in weightedRule.Key.rightSide){
+                    outString = outString + " " + n;
+                }
+                outString = outString + " " + weightedRule.Value;
+                ruleWriter.WriteLine(outString);                
+            }
+        }
+ 
+        using (StreamWriter wordWriter = new StreamWriter(wordsFile)){
+            foreach(String word in setOfWords){
+                wordWriter.WriteLine(word);
+            }
         }
     }
 }

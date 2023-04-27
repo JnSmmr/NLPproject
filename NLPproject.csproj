@@ -7,6 +7,8 @@
     <Nullable>enable</Nullable>
     <TargetName>pcfg_tool</TargetName>
     <AssemblyName>pcfg_tool</AssemblyName>
+    <OutputPath>.</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
 </Project>

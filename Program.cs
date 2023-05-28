@@ -1,6 +1,8 @@
 ﻿
+namespace NLPproject{
 public class Program{
     static int Main (string[] args){
+        //TODO: WriteLine to -> ERR
 
         Console.WriteLine(args.Length);
         if (args.Length == 0){
@@ -16,6 +18,13 @@ public class Program{
             Grammar grammar = parser.parseFile(grammarName);
             grammar.write();
             return 0;
+        }
+        if (args[0] == "parse"){
+            //TODO: catches
+
+            DeductiveParser deductiveParser = new DeductiveParser();
+            deductiveParser.initialize(args[1], args[2]);
+
         }
 
 
@@ -334,4 +343,5 @@ public class Grammar{
             }
         }
     }
+}
 }

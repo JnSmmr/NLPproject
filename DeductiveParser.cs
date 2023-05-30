@@ -72,17 +72,27 @@ namespace NLPproject
         }
 
         public void deduce(String[] sentence){
-            PriorityQueue<queueElement,double> queue = new PriorityQueue<queueElement,double>();
-            foreach (String word in sentence){
+          
+          // Line 2, init Queue
+          PriorityQueue<queueElement,double> queue = new PriorityQueue<queueElement,double>();
+            for ( int i = 0; i < sentence.Length; i++){
                 (DeductionRule,double) bestRule;                
-                if (lexicalRules.TryGetValue(word, out var candidateRules)){
+                if (lexicalRules.TryGetValue(sentence[i], out var candidateRules)){
                     bestRule = candidateRules.Max;
                 }
                 else{
                     //TODO: Write ERR
                 }
-
+                //TODO: queueElement groß schreiben
+                queue.Add(new queueElement(i, bestRule((key)).leftSide, bestRule((value));                
             }
+            // Line 3 init c
+            
+                                           
+            while (!queue.isEmpty()){
+              
+            }
+            
         }
 
 
@@ -94,11 +104,14 @@ namespace NLPproject
     public struct queueElement{
         int leftCounter;
         int rightCounter;
-        DeductionRule rule;
-        double propability;
+        String nonterminal;
         List<DeductionRule> backtrace;
-
-
+      
+        public queueElement(int l, int r, String A){
+          leftCounter = l;
+          rightCounter = r;
+          nonterminal = A;
+          }
     }
 
     public struct DeductionRule{
